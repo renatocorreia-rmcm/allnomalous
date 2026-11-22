@@ -34,6 +34,34 @@ Use a validacao para acompanhar a perda de reconstrucao e ajustar
 hiperparametros. Ela nao deve ser usada para medir AUROC; essa avaliacao deve
 usar o teste oficial.
 
+## Figuras de exemplo do dataset
+
+Gere as figuras de exemplo em PNG com resolucao de 300 dpi executando na raiz
+do repositorio:
+
+```bash
+python plot_dataset_examples.py
+```
+
+No Windows, tambem e possivel usar `py -3.9 plot_dataset_examples.py`. Os
+arquivos sao salvos em `figures/dataset_examples/`. Para alterar a pasta dos
+dados ou a pasta de saida, use `--data-root` e `--output-dir`; `--dpi` altera a
+resolucao (o padrao e 300).
+
+A funcao `plot_example(data_root, category, defect_type, image_name=None)`
+em `plot_dataset_examples.py` monta tres paineis: uma imagem normal de treino,
+uma imagem de teste defeituosa e a mesma imagem com a mascara ground truth em
+vermelho. As figuras geradas incluem as legendas:
+
+1. **Categorias normais:** uma imagem normal de treino (`good`) para cada uma
+   das 15 categorias do MVTec AD.
+2. **Bottle — broken large:** imagem normal de treino, exemplo de teste com
+   quebra grande e mascara ground truth sobreposta.
+3. **Carpet — cut:** imagem normal de treino, exemplo de teste com corte e
+   mascara ground truth sobreposta.
+4. **Transistor — damaged case:** imagem normal de treino, exemplo de teste
+   com dano na carcaça e mascara ground truth sobreposta.
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
