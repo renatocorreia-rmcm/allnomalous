@@ -1,0 +1,16 @@
+category,height,width,color_mode,image_count
+bottle,900,900,RGB,292
+cable,1024,1024,RGB,374
+capsule,1000,1000,RGB,351
+carpet,1024,1024,RGB,397
+grid,1024,1024,L,342
+hazelnut,1024,1024,RGB,501
+leather,1024,1024,RGB,369
+metal_nut,700,700,RGB,335
+pill,800,800,RGB,434
+screw,1024,1024,L,480
+tile,840,840,RGB,347
+toothbrush,1024,1024,RGB,102
+transistor,1024,1024,RGB,313
+wood,1024,1024,RGB,326
+zipper,1024,1024,L,391

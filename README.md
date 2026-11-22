@@ -34,6 +34,69 @@ Use a validacao para acompanhar a perda de reconstrucao e ajustar
 hiperparametros. Ela nao deve ser usada para medir AUROC; essa avaliacao deve
 usar o teste oficial.
 
+## Figuras de exemplo do dataset
+
+Gere as figuras de exemplo em PNG com resolucao de 300 dpi executando na raiz
+do repositorio:
+
+```bash
+python plot_dataset_examples.py
+```
+
+No Windows, tambem e possivel usar `py -3.9 plot_dataset_examples.py`. Os
+arquivos sao salvos em `figures/dataset_examples/`. Para alterar a pasta dos
+dados ou a pasta de saida, use `--data-root` e `--output-dir`; `--dpi` altera a
+resolucao (o padrao e 300).
+
+A funcao `plot_example(data_root, category, defect_type, image_name=None)`
+em `plot_dataset_examples.py` monta tres paineis: uma imagem normal de treino,
+uma imagem de teste defeituosa e a mesma imagem com a mascara ground truth em
+vermelho. As figuras geradas incluem as legendas:
+
+1. **Categorias normais:** uma imagem normal de treino (`good`) para cada uma
+   das 15 categorias do MVTec AD.
+2. **Bottle — broken large:** imagem normal de treino, exemplo de teste com
+   quebra grande e mascara ground truth sobreposta.
+3. **Carpet — cut:** imagem normal de treino, exemplo de teste com corte e
+   mascara ground truth sobreposta.
+4. **Transistor — damaged case:** imagem normal de treino, exemplo de teste
+   com dano na carcaça e mascara ground truth sobreposta.
+
+## Resolucao e tamanho dos defeitos
+
+Execute `py -3.9 analyze_dataset.py` na raiz do repositorio para recriar as
+tabelas e o histograma em `analysis/dataset_profile/`. A leitura das imagens
+usa apenas os metadados de tamanho e modo do PIL; as mascaras sao lidas uma de
+cada vez para contar pixels marcados (`> 0`). A proporcao e calculada como
+pixels marcados divididos pela area da imagem correspondente.
+
+- `image_profiles_by_category.csv`: resolucao em altura x largura, modo de cor
+  e quantidade de imagens por perfil.
+- `mask_anomaly_ratios.csv`: dimensoes da imagem e mascara, contagem de pixels
+  anômalos, proporcao por mascara e verificacao de tamanho.
+- `anomaly_summary_by_category.csv`: quantidade, media, mediana, menor
+  proporcao e contagem de mascaras pequenas por categoria.
+- `anomaly_ratio_histogram.png`: distribuicao das proporcoes; a linha em 1% e
+  uma referencia visual para destacar defeitos pequenos.
+
+Na versao analisada, as 5.354 imagens tem tamanhos entre 700 x 700 e
+1024 x 1024. As categorias `grid`, `screw` e `zipper` estao no modo `L`
+(tons de cinza); as outras 12 estao em `RGB`. Foram analisadas 1.258 mascaras
+e todas tem o mesmo tamanho da imagem correspondente. A proporcao media e a
+mediana de cada categoria estao na tabela de resumo.
+
+A menor mascara encontrada e `capsule/crack/021_mask.png`: 371 pixels em uma
+imagem de 1000 x 1000 (0,0371%). No conjunto, 499 mascaras ocupam menos de 1%
+da imagem e 17 ocupam menos de 0,1%. Como estimativa pela area, a menor mascara
+teria cerca de 97 pixels marcados em 512 x 512, contra 24 em 256 x 256 e 6 em
+128 x 128. Isso nao garante que a forma do defeito sobreviva ao redimensionamento:
+interpolacao e defeitos finos podem apagar ou fragmentar pixels.
+
+Como ponto de partida, recomenda-se 512 x 512, comparando o desempenho com a
+resolucao nativa para as categorias e mascaras menores antes de fixar a entrada
+do modelo. Evite reduzir diretamente para 128 x 128; a avaliacao deve acompanhar
+recall nas amostras com menor proporcao de mascara.
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
