@@ -1,0 +1,212 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{textcomp}
+\graphicspath{{./}{figures/}}
+
+\begin{document}
+
+\title{Detecção de Anomalias Independente de Classe com Mapas de Calor por Pixel no MVTec AD}
+
+\author{\IEEEauthorblockN{Pedro Fernandes Galindo}
+\IEEEauthorblockA{\textit{Centro de Informática (CIn)} \\
+\textit{Universidade Federal de Pernambuco}\\
+Recife, Brasil \\
+pfg@cin.ufpe.br}
+\and
+\IEEEauthorblockN{Renato Monteiro Correia Medeiros}
+\IEEEauthorblockA{\textit{Centro de Informática (CIn)} \\
+\textit{Universidade Federal de Pernambuco}\\
+Recife, Brasil \\
+rmcm@cin.ufpe.br}
+}
+
+\maketitle
+
+\begin{abstract}
+Este projeto propõe desenvolver e avaliar um modelo geral de detecção e localização de anomalias visuais, treinado somente com exemplos normais de múltiplas categorias e sem receber a identidade da categoria durante o treinamento ou a inferência. Inspirado por UniAD e CADA, o modelo produzirá, para cada imagem, um mapa de calor alinhado à imagem, com um escore contínuo de anomalia por pixel. Os experimentos utilizarão as 15 categorias do MVTec Anomaly Detection (MVTec AD), com avaliação de detecção em nível de imagem e localização em nível de pixel. O foco é verificar se um único modelo pode identificar e localizar defeitos diversos sem depender de modelos ou limiares informados por classe.
+\end{abstract}
+
+\begin{IEEEkeywords}
+detecção de anomalias, independente de classe, localização de anomalias, mapa de calor, MVTec AD
+\end{IEEEkeywords}
+
+\section{Introdução}
+Em inspeção visual, defeitos são raros e podem assumir formas desconhecidas, dificultando a obtenção de dados rotulados para treinamento. Este projeto considera o cenário não supervisionado: o modelo aprende exclusivamente com imagens normais e deve assinalar desvios em imagens de diferentes categorias. A saída principal será um mapa de calor espacial com um escore de anomalia para cada pixel, permitindo localizar os defeitos, além de resumir cada mapa em um escore por imagem \cite{bergmann2021mvtec}.
+
+Trabalhos recentes mostram que modelos unificados podem operar sobre várias categorias sem receber rótulos de classe e apontam desafios como atalhos de reconstrução e escalas de pontuação incompatíveis entre categorias. A proposta adota essas ideias como referência para desenvolver e avaliar um único detector sem condicionamento por classe, sem pretender reproduzir integralmente os métodos publicados \cite{you2022unified,guo2024cada}.
+
+\section{Objetivos}
+\subsection{Objetivo geral}
+Desenvolver e avaliar um modelo geral de detecção de anomalias, independente de classe, que aprenda com imagens normais de múltiplas categorias e produza um mapa de calor com um escore de anomalia por pixel.
+
+\subsection{Objetivos específicos}
+\begin{itemize}
+\item Caracterizar imagens, categorias, partições e máscaras do MVTec AD.
+\item Treinar um único modelo com imagens normais de todas as categorias, sem usar rótulos de classe na entrada nem na inferência.
+\item Gerar um mapa de calor de escores contínuos por pixel e um escore agregado por imagem.
+\item Medir detecção em nível de imagem e localização em nível de pixel, sem usar o teste oficial para escolher o modelo.
+\item Analisar falsos alarmes, custo computacional e limitações da abordagem independente de classe.
+\end{itemize}
+
+\section{Justificativa}
+Treinar um modelo por categoria exige identificar a classe na implantação e manter múltiplos modelos. Um detector único que não dependa dessa informação pode simplificar o uso em cenários nos quais as categorias são desconhecidas, mas precisa lidar com distribuições visuais distintas e produzir escores comparáveis entre elas. UniAD estuda a detecção unificada sem rótulos de classe e CADA aborda o desalinhamento das distribuições de escores nesse cenário \cite{you2022unified,guo2024cada}.
+
+O MVTec AD reúne objetos, texturas e máscaras pixel a pixel, permitindo avaliar tanto se o modelo detecta uma imagem defeituosa quanto se localiza precisamente a região anômala. Assim, o projeto investigará uma saída diretamente útil à inspeção visual: um mapa de calor espacial com escore por pixel, aprendido sem exemplos de defeitos e sem dependência da classe \cite{bergmann2021mvtec}.
+
+\section{Base de Dados}
+O MVTec AD \cite{bergmann2021mvtec} reúne 15 categorias, sendo 5 de textura e 10 de objeto. O conjunto de treino contém apenas imagens normais, enquanto o de teste contém imagens normais e defeituosas. No total são 5.354 imagens, valor que confere com o informado no artigo da base. A Tabela~\ref{tab:contagem} apresenta as contagens por categoria e partição.
+
+\begin{table}[htbp]
+\caption{Imagens por categoria e partição (conjunto original)}
+\label{tab:contagem}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrr}
+\toprule
+Categoria & Treino normal & Teste normal & Teste defeit. & Total \\
+\midrule
+bottle     & 209 & 20 & 63  & 292 \\
+cable      & 224 & 58 & 92  & 374 \\
+capsule    & 219 & 23 & 109 & 351 \\
+carpet     & 280 & 28 & 89  & 397 \\
+grid       & 264 & 21 & 57  & 342 \\
+hazelnut   & 391 & 40 & 70  & 501 \\
+leather    & 245 & 32 & 92  & 369 \\
+metal\_nut & 220 & 22 & 93  & 335 \\
+pill       & 267 & 26 & 141 & 434 \\
+screw      & 320 & 41 & 119 & 480 \\
+tile       & 230 & 33 & 84  & 347 \\
+toothbrush & 60  & 12 & 30  & 102 \\
+transistor & 213 & 60 & 40  & 313 \\
+wood       & 247 & 19 & 60  & 326 \\
+zipper     & 240 & 32 & 119 & 391 \\
+\midrule
+\textbf{Total} & \textbf{3629} & \textbf{467} & \textbf{1258} & \textbf{5354} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Para validação, foram reservados 10\% das imagens normais de treino de cada categoria (arredondado para cima), com semente fixa 42. O teste oficial permanece intocado. A Tabela~\ref{tab:divisao} mostra a divisão resultante, com 3.262 imagens de treino e 367 de validação.
+
+\begin{table}[htbp]
+\caption{Divisão treino/validação das imagens normais de treino}
+\label{tab:divisao}
+\centering
+\small
+\begin{tabular}{lrr|lrr}
+\toprule
+Categoria & Treino & Valid. & Categoria & Treino & Valid. \\
+\midrule
+bottle     & 188 & 21 & pill       & 240 & 27 \\
+cable      & 201 & 23 & screw      & 288 & 32 \\
+capsule    & 197 & 22 & tile       & 207 & 23 \\
+carpet     & 252 & 28 & toothbrush & 54  & 6  \\
+grid       & 237 & 27 & transistor & 191 & 22 \\
+hazelnut   & 351 & 40 & wood       & 222 & 25 \\
+leather    & 220 & 25 & zipper     & 216 & 24 \\
+metal\_nut & 198 & 22 & \textbf{Total} & \textbf{3262} & \textbf{367} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As 1.258 imagens defeituosas de teste distribuem-se em 73 tipos de defeito.
+
+\section{Análise Exploratória}
+A Figura~\ref{fig:contagem} resume a composição de cada categoria. Há desbalanceamento claro: a categoria toothbrush tem apenas 102 imagens, enquanto hazelnut tem 501. A proporção de imagens normais no teste também varia bastante; em transistor, por exemplo, são 60 normais contra 40 defeituosas.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{imagens_por_categoria.png}
+\caption{Imagens do MVTec AD por categoria e partição.}
+\label{fig:contagem}
+\end{figure*}
+
+A Figura~\ref{fig:categorias} mostra uma imagem normal de treino de cada uma das 15 categorias, cobrindo texturas (carpet, grid, leather, tile, wood) e objetos.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{normais_15_categorias.png}
+\caption{Uma imagem normal de treino para cada uma das 15 categorias do MVTec AD.}
+\label{fig:categorias}
+\end{figure}
+
+A Figura~\ref{fig:exemplos} apresenta exemplos de defeitos com a máscara de ground truth sobreposta, ilustrando tipos e tamanhos distintos de anomalia.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{defeito_bottle_broken_large.png}\\[2pt]
+\includegraphics[width=\columnwidth]{defeito_carpet_cut.png}\\[2pt]
+\includegraphics[width=\columnwidth]{defeito_transistor_damaged_case.png}
+\caption{Imagem normal de treino, imagem de teste com defeito e máscara ground truth sobreposta em vermelho: bottle (broken large), carpet (cut) e transistor (damaged case).}
+\label{fig:exemplos}
+\end{figure}
+
+\subsection{Resoluções e tamanho dos defeitos}
+Todas as imagens de uma mesma categoria têm a mesma resolução, e todas as 1.258 máscaras têm o mesmo tamanho da imagem correspondente (nenhuma divergência). Grid, screw e zipper são em tons de cinza (um canal); as demais são RGB. A Tabela~\ref{tab:perfil} traz a resolução, o modo de cor e a proporção de pixels anômalos por categoria (pixels marcados divididos pelos pixels da imagem).
+
+\begin{table}[htbp]
+\caption{Perfil das imagens e proporção de pixels anômalos por categoria (valores em \%)}
+\label{tab:perfil}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcrrrr}
+\toprule
+Categoria & Resolução & Cor & Média & Mediana & Mín. & $<1\%$ \\
+\midrule
+bottle & 900$\times$900 & RGB & 7.62 & 5.72 & 0.576 & 3/63 \\
+cable & 1024$\times$1024 & RGB & 4.68 & 3.68 & 0.144 & 7/92 \\
+capsule & 1000$\times$1000 & RGB & 1.11 & 0.43 & 0.037 & 85/109 \\
+carpet & 1024$\times$1024 & RGB & 2.11 & 1.48 & 0.165 & 37/89 \\
+grid & 1024$\times$1024 & Cinza & 0.95 & 0.60 & 0.188 & 39/57 \\
+hazelnut & 1024$\times$1024 & RGB & 3.35 & 1.62 & 0.233 & 18/70 \\
+leather & 1024$\times$1024 & RGB & 0.87 & 0.46 & 0.089 & 70/92 \\
+metal\_nut & 700$\times$700 & RGB & 14.49 & 3.67 & 0.436 & 7/93 \\
+pill & 800$\times$800 & RGB & 3.98 & 1.03 & 0.050 & 68/141 \\
+screw & 1024$\times$1024 & Cinza & 0.34 & 0.29 & 0.099 & 118/119 \\
+tile & 840$\times$840 & RGB & 9.80 & 7.93 & 0.842 & 2/84 \\
+toothbrush & 1024$\times$1024 & RGB & 2.14 & 1.08 & 0.238 & 15/30 \\
+transistor & 1024$\times$1024 & RGB & 11.98 & 2.03 & 0.224 & 6/40 \\
+wood & 1024$\times$1024 & RGB & 5.09 & 2.90 & 0.263 & 8/60 \\
+zipper & 1024$\times$1024 & Cinza & 2.62 & 2.35 & 0.159 & 16/119 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A Figura~\ref{fig:hist} mostra a distribuição da proporção de pixels anômalos, em escala logarítmica. Dos 1.258 defeitos, 499 (cerca de 40\%) ocupam menos de 1\% da imagem, e 17 ocupam menos de 0,1\%. Os defeitos são especialmente pequenos em screw (118 de 119 máscaras abaixo de 1\%, mediana de 0,29\%), capsule (85 de 109) e leather (70 de 92). Em contrapartida, categorias como metal\_nut e transistor têm defeitos grandes, causados sobretudo pelos tipos flip e misplaced, cujas máscaras cobrem cerca de 38\% a 49\% da imagem. Como ponto de partida, será considerada a resolução de $512\times512$, comparando-se o desempenho com a resolução nativa e monitorando especialmente a detecção dos defeitos menores.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{histograma_proporcao_anomala.png}
+\caption{Distribuição da proporção de pixels anômalos nas máscaras de ground truth (eixo horizontal em escala logarítmica; linha tracejada em 1\%).}
+\label{fig:hist}
+\end{figure}
+
+\section{Modelos em Aprendizagem Profunda}
+Será implementado um detector unificado inspirado em UniAD \cite{you2022unified}, composto por um extrator de características visuais e um decodificador de reconstrução com consultas aprendidas. A arquitetura utilizará consultas por camada, atenção mascarada entre vizinhos (\textit{neighbor masked attention}) e perturbação leve das características (\textit{feature jittering}) para reduzir atalhos que permitam copiar a entrada. A discrepância entre as características extraídas da imagem e as reconstruídas será convertida em um mapa de anomalia e redimensionada à resolução original. Cada posição representará um escore contínuo por pixel; os escores serão normalizados para visualização, sem serem interpretados como probabilidades calibradas. O escore por imagem será obtido por uma agregação robusta dos maiores escores locais.
+
+Como extensão exploratória, caso o tempo permita, será analisado o alinhamento de escores sem acesso aos rótulos de classe, inspirado no CADA \cite{guo2024cada}.
+
+\section{Experimentos}
+Em cada categoria, 10\% das imagens normais de treinamento serão reservadas para validação por uma divisão fixa e registrada; as demais formarão o conjunto combinado de treinamento. A identidade da categoria não será fornecida ao modelo durante o treinamento nem na inferência. A partição oficial de teste ficará intocada até a avaliação final. A mesma transformação espacial será aplicada às imagens e às máscaras.
+
+A avaliação reportará AUROC em nível de imagem, AUROC em nível de pixel e AUPRO, por categoria e como média macro. O escore por imagem será derivado do mapa de calor; as métricas por pixel serão calculadas sobre os escores espaciais sem binarização. Serão inspecionados mapas de casos representativos para identificar falsos positivos e falsos negativos. Também serão medidos o tamanho do modelo, o tempo de treinamento e a latência de inferência, quando o ambiente permitir. Hiperparâmetros e eventual limiar operacional serão definidos somente com imagens normais de validação; rótulos e máscaras do teste serão usados exclusivamente na avaliação final.
+
+\section{Análise dos Resultados}
+Os resultados serão apresentados por categoria e como média macro, acompanhados de exemplos dos mapas de anomalia e da comparação com as máscaras de referência. A discussão examinará falsos positivos e falsos negativos, o efeito da resolução de entrada, o custo computacional e as limitações do detector independente de classe.
+
+\section{Conclusões e Discussões}
+Esta seção será concluída após os experimentos, sintetizando os resultados obtidos, as limitações observadas e as possibilidades de trabalhos futuros.
+
+\bibliographystyle{IEEEtran}
+\bibliography{referencias}
+
+\end{document}
