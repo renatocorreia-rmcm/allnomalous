@@ -133,6 +133,17 @@ py -3.9 -m unittest discover -s tests
 py -3.9 -c "from src.mvtec_dataset import create_dataloaders; train, val = create_dataloaders('.', batch_size=8); print('train', next(iter(train)).shape, 'validation', next(iter(val)).shape)"
 ```
 
+## Decisao de implementacao do modelo
+
+A comparacao entre a implementacao oficial UniAD e anomalib, a decisao
+arquitetural e o cronograma revisado estao em
+[`docs/decisions/uniad-implementation.md`](docs/decisions/uniad-implementation.md).
+A especificacao detalhada do modelo minimo e completo, do baseline de ablation
+e do protocolo de comparacao esta em
+[`docs/decisions/model-baseline-specification.md`](docs/decisions/model-baseline-specification.md).
+O relatorio tambem registra a decisao e as citacoes de artigos, bibliotecas e
+implementacoes consultadas.
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
