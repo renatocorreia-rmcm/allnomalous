@@ -97,6 +97,42 @@ resolucao nativa para as categorias e mascaras menores antes de fixar a entrada
 do modelo. Evite reduzir diretamente para 128 x 128; a avaliacao deve acompanhar
 recall nas amostras com menor proporcao de mascara.
 
+## DataLoader PyTorch
+
+Instale as dependencias com `py -3.9 -m pip install -r requirements.txt`.
+Os datasets e as funcoes para criar os loaders estao em
+`src/mvtec_dataset.py`. O tamanho padrao e 512 x 512; imagens sao convertidas
+para RGB, redimensionadas sem recorte e normalizadas com a media e o desvio
+padrao ImageNet.
+
+```python
+from src.mvtec_dataset import create_dataloaders, create_test_dataloader
+
+train_loader, validation_loader = create_dataloaders(".", batch_size=32)
+test_loader = create_test_dataloader(".", batch_size=32)
+
+for images in train_loader:
+    output = model(images)  # O modelo recebe apenas as imagens.
+
+for images, masks, labels, categories in test_loader:
+    output = model(images)  # categories sao metadados para agrupar a avaliacao.
+```
+
+O treino e a validacao leem `train_split.csv` e `val_split.csv`, respectivamente;
+ambos combinam as 15 categorias e retornam somente tensores de imagem, sem
+rótulo nem metadado de categoria. O loader de treino embaralha as amostras. O
+loader de teste retorna imagem, mascara binaria, rotulo de imagem (0 normal,
+1 defeituosa) e nome da categoria. As imagens e mascaras usam o mesmo tamanho;
+mascaras sao redimensionadas com interpolacao nearest e imagens com interpolacao
+bilinear. Imagens normais de teste recebem uma mascara zerada.
+
+Para validar a implementacao, execute:
+
+```bash
+py -3.9 -m unittest discover -s tests
+py -3.9 -c "from src.mvtec_dataset import create_dataloaders; train, val = create_dataloaders('.', batch_size=8); print('train', next(iter(train)).shape, 'validation', next(iter(val)).shape)"
+```
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
