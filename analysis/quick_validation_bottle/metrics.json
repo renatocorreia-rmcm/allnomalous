@@ -1,0 +1,23 @@
+{
+  "category": "bottle",
+  "device": "cpu",
+  "image_size": 256,
+  "epochs": 2,
+  "train_samples_per_epoch": 188,
+  "validation_samples": 21,
+  "train_loss_first": 0.9856169528149544,
+  "train_loss_last": 0.5428461552934444,
+  "validation_loss_first": 0.6028821042605809,
+  "validation_loss_last": 0.4669149730886732,
+  "epoch_seconds_mean": 65.09172949999999,
+  "validation_normal_top1_percent_score_mean": 43.8043212890625,
+  "normal_pair_top1_percent_score": 43.42698287963867,
+  "synthetic_pair_top1_percent_score": 60.074100494384766,
+  "synthetic_patch_map_mean": 50.2213134765625,
+  "synthetic_outside_patch_map_mean": 29.775609970092773,
+  "synthetic_patch_to_outside_map_ratio": 1.6866594345844066,
+  "estimated_cpu_30_epoch_full_dataset_one_model_hours": 9.411756277881203,
+  "estimate_note": "Linear extrapolation from this CPU run at reduced resolution; not a GPU estimate and excludes validation/overhead.",
+  "official_test_used": false,
+  "decoder_trained": true
+}

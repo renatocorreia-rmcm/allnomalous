@@ -32,6 +32,16 @@ tambem executa DataLoader -> extrator -> decoder -> mapa -> escore em uma
 amostra defeituosa de `bottle`; o decoder nessa verificacao ainda nao foi
 treinado, portanto o resultado confirma somente integracao e alinhamento.
 
+Antes do treino completo, `scripts/quick_category_experiment.py` treina o
+baseline em uma categoria por poucas epocas, mede loss de treino/validacao e
+cria um defeito sintetico somente a partir de imagens normais de validacao.
+O protocolo deixa o teste oficial fora do ciclo de selecao. A rodada curta
+documenta resolucao, batch, tempo por epoca e limites do hardware, sem alterar
+os hiperparametros previamente definidos a partir de resultados de teste.
+O primeiro resultado (duas epocas de `bottle`, CPU, 256 x 256) esta registrado
+em `docs/experiments/quick-validation-bottle.md`; o tempo extrapolado nao se
+aplica a GPU nem a entrada 512 x 512.
+
 ## Hiperparametros e comparacao
 
 | Seed | Batch/GPU (acum.) | Otimizador | Epocas |

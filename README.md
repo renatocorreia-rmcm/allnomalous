@@ -160,6 +160,20 @@ figura gerada fica em `figures/category_pipeline_bottle.png`, e o cronograma
 revisado esta em
 [`docs/decisions/uniad-implementation.md`](docs/decisions/uniad-implementation.md).
 
+## Experimento curto antes do treino completo
+
+Execute `py -3.9 scripts/quick_category_experiment.py --category bottle
+--image-size 256 --epochs 2 --batch-size 1` para treinar o baseline em imagens
+normais de treino da categoria e acompanhar a loss em imagens normais de
+validacao. O mesmo script cola um recorte de outra imagem normal de validacao
+para criar uma anomalia sintetica; nenhuma imagem do teste oficial e usada.
+Curva, comparacao visual, mapas brutos e `metrics.json` sao salvos em
+`analysis/quick_validation_bottle/`. O teste em resolucao reduzida e CPU serve
+como verificacao de aprendizado e depuracao, nao como ajuste final de
+hiperparametros ou estimativa de desempenho em GPU.
+Resultados, interpretacao e limitacoes estao em
+[`docs/experiments/quick-validation-bottle.md`](docs/experiments/quick-validation-bottle.md).
+
 ## Extrator de caracteristicas
 
 O extrator congelado Wide-ResNet-50-2 que alinha e concatena as features de
