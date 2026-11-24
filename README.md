@@ -150,6 +150,16 @@ Os diagramas SVG do pipeline do modelo e do protocolo experimental, junto com
 os pseudocodigos de treino e inferencia, estao em
 [`docs/model-pipeline-pseudocode.md`](docs/model-pipeline-pseudocode.md).
 
+## Checkpoint do pipeline em uma categoria
+
+O notebook [`notebooks/category_pipeline_checkpoint.ipynb`](notebooks/category_pipeline_checkpoint.ipynb)
+executa DataLoader, extrator, decoder, mapa de discrepancia e escore em uma
+amostra defeituosa de `bottle`. O decoder ainda nao foi treinado; esse
+checkpoint verifica execucao e alinhamento, nao qualidade do detector. A
+figura gerada fica em `figures/category_pipeline_bottle.png`, e o cronograma
+revisado esta em
+[`docs/decisions/uniad-implementation.md`](docs/decisions/uniad-implementation.md).
+
 ## Extrator de caracteristicas
 
 O extrator congelado Wide-ResNet-50-2 que alinha e concatena as features de

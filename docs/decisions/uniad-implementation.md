@@ -59,9 +59,11 @@ forward e backward com um batch pequeno. A versao do runtime de Colab e mutavel;
 nao presumir que corresponda ao Python ou CUDA local.
 
 Como nenhum candidato e executavel diretamente e aderente ao protocolo neste
-ambiente, nao ha exemplo minimo de modelo candidato que possa ser honestamente
-marcado como concluido. O proximo smoke test sera da implementacao propria no
-runtime Colab escolhido.
+ambiente, nao foi selecionado um modelo terceiro. O notebook
+`notebooks/category_pipeline_checkpoint.ipynb` executa o fluxo DataLoader,
+extrator, decoder, mapa e escore em uma amostra defeituosa de `bottle`, usando
+o decoder sem treino. O teste comprova integracao e dimensoes, nao qualidade do
+detector nem compatibilidade com Colab.
 
 ## Decisao: B
 
@@ -86,14 +88,18 @@ registrar tambem arquivo, commit/release e alteracoes.
 
 | Etapa | Esforco | Entrega / criterio de conclusao |
 |---|---:|---|
-| Preparar e registrar runtime Colab | 0,5 dia | Registrar Python, PyTorch, CUDA e VRAM; instalar dependencias; executar um forward e backward com batch pequeno. Esta etapa ainda esta pendente. |
-| Implementar o prototipo reduzido | 1 dia | Modelo proprio recebe somente imagens; loss finita e backward; gerar mapa espacial do tamanho esperado em resolucao reduzida. |
-| Treinar e comparar baseline/completo | 1-4 dias | Treinar nas imagens normais combinadas; avaliar teste oficial uma vez, com metricas de imagem e pixel por categoria. Ajustar o tempo/epocas conforme VRAM e duracao observadas. |
-| Comparar resolucao, analisar erros e documentar | 0,5 dia | Comparar resolucoes; inspecionar mapas nos menores defeitos; atualizar notebook, citacoes e relatorio. |
+| Preparar e registrar runtime Colab | 0,5 dia — pendente | Registrar Python, PyTorch, CUDA e VRAM; instalar dependencias; executar um forward e backward com batch pequeno. |
+| Implementar prototipo e checkpoint em uma categoria | Concluido localmente | Testes de forward/backward e reducao da loss; notebook executa DataLoader -> extrator -> decoder -> mapa -> escore e salva figura para `bottle`. Decoder ainda sem treino; checkpoint valida integracao, nao qualidade. |
+| Treinar e comparar baseline/completo | 1-4 dias — proximo | Treinar nas imagens normais combinadas; avaliar teste oficial uma vez, com metricas de imagem e pixel por categoria. Ajustar tempo/epocas conforme VRAM e duracao observadas. |
+| Comparar resolucao, analisar erros e documentar | 0,5 dia — pendente | Comparar resolucoes; inspecionar mapas do decoder treinado nos menores defeitos; atualizar notebook, citacoes e relatorio. |
 
-**Estimativa total:** 3-6 dias de trabalho, sujeita a disponibilidade de GPU e
-ao tempo real de treino. A resolucao e o numero de epocas sao escolhas
-experimentais, nao uma equivalencia com os 1000 epochs do codigo oficial.
+**Estimativa restante a partir deste checkpoint:** 2-5 dias de trabalho, dos
+quais 1-4 dias dependem do treino/avaliacao em GPU e cerca de 0,5 dia de runtime
+e validacao de resolucao. O checkpoint local passou em CPU, mas VRAM e
+throughput de GPU continuam sem medicao. O teste oficial deve permanecer
+intocado ate os checkpoints e configuracoes serem escolhidos pela validacao.
+As epocas sao escolhas experimentais, nao equivalem aos 1000 epochs do codigo
+oficial.
 
 ## Atribuicao de terceiros
 

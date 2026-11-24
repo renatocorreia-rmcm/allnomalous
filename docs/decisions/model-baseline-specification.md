@@ -27,6 +27,10 @@ O teste unitario treina a versao base em um batch sintetico fixo e confirma
 reducao da MSE; o decoder completo tambem e testado com forward/backward.
 `py -3.9 scripts/smoke_test_decoder.py --category bottle` executa um forward
 do extrator e decoder completo em uma imagem normal real da categoria indicada.
+O checkpoint de pipeline em `notebooks/category_pipeline_checkpoint.ipynb`
+tambem executa DataLoader -> extrator -> decoder -> mapa -> escore em uma
+amostra defeituosa de `bottle`; o decoder nessa verificacao ainda nao foi
+treinado, portanto o resultado confirma somente integracao e alinhamento.
 
 ## Hiperparametros e comparacao
 
