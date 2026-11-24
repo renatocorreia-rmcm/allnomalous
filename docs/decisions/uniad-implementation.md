@@ -69,7 +69,8 @@ Implementar no repositorio uma versao reduzida original, em vez de portar a
 implementacao oficial. A especificacao exata do modelo minimo, da versao
 completa, do baseline e do protocolo comparativo esta em
 [`model-baseline-specification.md`](model-baseline-specification.md). A
-especificacao escolhe Wide-ResNet-50-2 congelado, layer3, entrada 512 x 512 e
+especificacao escolhe Wide-ResNet-50-2 congelado, features alinhadas de layer1
+a layer3, entrada 512 x 512 e
 um decodificador com consultas aprendidas; mask e jitter ficam fora do baseline
 e entram somente na versao completa. O modelo recebe tensores de imagem,
 nunca nomes de categoria, labels ou mascaras.
