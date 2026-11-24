@@ -160,6 +160,16 @@ figura gerada fica em `figures/category_pipeline_bottle.png`, e o cronograma
 revisado esta em
 [`docs/decisions/uniad-implementation.md`](docs/decisions/uniad-implementation.md).
 
+## Treinamento combinado no Google Colab
+
+O notebook [`notebooks/train_combined_colab.ipynb`](notebooks/train_combined_colab.ipynb)
+clona este repositorio publico e baixa as imagens MVTec armazenadas em Git LFS;
+assim, o codigo e os dados vem do proprio GitHub, sem upload manual do dataset.
+Ele monta o Google Drive para salvar checkpoint retomavel a cada epoca, melhor
+modelo, historico e curva de loss. Abra o notebook no Colab, selecione uma GPU,
+execute as celulas em ordem e rode a celula `train_block()` novamente para
+continuar por blocos.
+
 ## Experimento curto antes do treino completo
 
 Execute `py -3.9 scripts/quick_category_experiment.py --category bottle
