@@ -167,11 +167,13 @@ clona este repositorio publico e baixa as imagens MVTec armazenadas em Git LFS;
 assim, o codigo e os dados vem do proprio GitHub, sem upload manual do dataset.
 Ele monta o Google Drive para salvar checkpoint retomavel a cada epoca, melhor
 modelo, historico e curva de loss em `MyDrive/allnomalous_training`. O notebook
-tambem orienta a testar a retomada apos reiniciar o runtime e exporta
+tambem oferece uma busca curta de tres configuracoes em subconjuntos normais de
+treino/validacao, salva `hyperparameter_search.csv` e mapas para inspecao,
+orienta a testar a retomada apos reiniciar o runtime e exporta
 `computational_costs.csv` com parametros, tamanho dos checkpoints, tempos,
 latencia de inferencia e memoria da GPU. Abra o notebook no Colab, selecione
-uma GPU, execute as celulas em ordem e rode a celula `train_block()` novamente
-para continuar por blocos.
+uma GPU, execute as celulas em ordem, escolha e justifique a configuracao apos
+inspecionar os mapas e rode `train_block()` novamente para continuar por blocos.
 
 ## Experimento curto antes do treino completo
 
