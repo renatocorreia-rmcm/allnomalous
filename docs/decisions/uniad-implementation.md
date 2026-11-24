@@ -90,7 +90,8 @@ registrar tambem arquivo, commit/release e alteracoes.
 |---|---:|---|
 | Preparar e registrar runtime Colab | 0,5 dia — pendente | Registrar Python, PyTorch, CUDA e VRAM; instalar dependencias; executar um forward e backward com batch pequeno. |
 | Implementar prototipo e checkpoint em uma categoria | Concluido localmente | Testes de forward/backward e reducao da loss; notebook executa DataLoader -> extrator -> decoder -> mapa -> escore e salva figura para `bottle`. Decoder ainda sem treino; checkpoint valida integracao, nao qualidade. |
-| Treinar e comparar baseline/completo | 1-4 dias — proximo | Treinar nas imagens normais combinadas; avaliar teste oficial uma vez, com metricas de imagem e pixel por categoria. Ajustar tempo/epocas conforme VRAM e duracao observadas. |
+| Treino curto do baseline em 1 categoria | Concluido localmente | Duas epocas de `bottle` em CPU a 256 x 256, batch 1; MSE caiu em treino e validacao, e o patch sintetico teve maior discrepancia na regiao alterada. Teste oficial nao usado. Resultados e limites em `docs/experiments/quick-validation-bottle.md`; isso nao substitui o preflight GPU. |
+| Treinar e comparar baseline/completo | 1-4 dias — apos preflight | Treinar nas imagens normais combinadas; avaliar teste oficial uma vez, com metricas de imagem e pixel por categoria. Ajustar tempo/epocas conforme VRAM e duracao observadas. |
 | Comparar resolucao, analisar erros e documentar | 0,5 dia — pendente | Comparar resolucoes; inspecionar mapas do decoder treinado nos menores defeitos; atualizar notebook, citacoes e relatorio. |
 
 **Estimativa restante a partir deste checkpoint:** 2-5 dias de trabalho, dos
