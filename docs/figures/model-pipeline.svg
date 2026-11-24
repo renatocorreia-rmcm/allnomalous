@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2390" height="680" viewBox="0 0 2390 680" role="img" aria-labelledby="title desc">
+  <title id="title">Pipeline do detector de anomalias</title>
+  <desc id="desc">Fluxo de imagem ao escore de anomalia, com jitter e atencao local opcionais na versao completa.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #24292f; }
+      .title { font-size: 30px; font-weight: 700; }
+      .subtitle { font-size: 17px; fill: #57606a; }
+      .box { stroke-width: 2; rx: 14; }
+      .heading { font-size: 18px; font-weight: 700; text-anchor: middle; }
+      .body { font-size: 15px; text-anchor: middle; fill: #424a53; }
+      .arrow { stroke: #57606a; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .note { font-size: 16px; fill: #424a53; }
+    </style>
+  </defs>
+  <rect width="2390" height="680" fill="#f6f8fa"/>
+  <text class="title" x="48" y="62">Pipeline do detector de anomalias</text>
+  <text class="subtitle" x="48" y="102">O modelo recebe apenas imagens. O baseline desativa jitter e mascara local; a versao completa ativa ambos.</text>
+
+  <rect class="box" x="45" y="265" width="150" height="180" fill="#ddf4ff" stroke="#54aeff"/>
+  <text class="heading" x="120" y="320"><tspan x="120">Imagem</tspan></text>
+  <text class="body" x="120" y="358"><tspan x="120">RGB</tspan><tspan x="120" dy="23">sem rotulo</tspan><tspan x="120" dy="23">de categoria</tspan></text>
+
+  <rect class="box" x="220" y="265" width="180" height="180" fill="#ddf4ff" stroke="#54aeff"/>
+  <text class="heading" x="310" y="320"><tspan x="310">Pre-processamento</tspan></text>
+  <text class="body" x="310" y="358"><tspan x="310">resize 512 x 512</tspan><tspan x="310" dy="23">sem recorte</tspan><tspan x="310" dy="23">normalizacao ImageNet</tspan></text>
+
+  <rect class="box" x="425" y="265" width="220" height="180" fill="#fff1e5" stroke="#fb8f44"/>
+  <text class="heading" x="535" y="320"><tspan x="535">Extrator congelado</tspan></text>
+  <text class="body" x="535" y="358"><tspan x="535">Wide-ResNet-50-2</tspan><tspan x="535" dy="23">pesos ImageNet V2</tspan><tspan x="535" dy="23">layer1-3; eval; sem gradiente</tspan></text>
+
+  <rect class="box" x="685" y="265" width="180" height="180" fill="#fff8c5" stroke="#d4a72c"/>
+  <text class="heading" x="775" y="320"><tspan x="775">Features alvo</tspan></text>
+  <text class="body" x="775" y="358"><tspan x="775">grade espacial alinhada</tspan><tspan x="775" dy="23">32 x 32 x 1792</tspan><tspan x="775" dy="23">referencia congelada</tspan></text>
+
+  <rect class="box" x="900" y="265" width="160" height="180" fill="#fff8c5" stroke="#d4a72c" stroke-dasharray="8 5"/>
+  <text class="heading" x="980" y="320"><tspan x="980">Jitter</tspan><tspan x="980" dy="23">opcional</tspan></text>
+  <text class="body" x="980" y="380"><tspan x="980">apenas completo</tspan><tspan x="980" dy="23">baseline: bypass</tspan></text>
+
+  <rect class="box" x="1095" y="265" width="230" height="180" fill="#fbefff" stroke="#bf8bff"/>
+  <text class="heading" x="1210" y="320"><tspan x="1210">Decodificador</tspan></text>
+  <text class="body" x="1210" y="358"><tspan x="1210">projecao 1792 -> 128</tspan><tspan x="1210" dy="22">queries + posicoes aprendidas</tspan><tspan x="1210" dy="22">2 encoder + 2 decoder</tspan><tspan x="1210" dy="22">mascara local 7 x 7: completo</tspan></text>
+
+  <rect class="box" x="1360" y="265" width="180" height="180" fill="#fbefff" stroke="#bf8bff"/>
+  <text class="heading" x="1450" y="320"><tspan x="1450">Features</tspan><tspan x="1450" dy="23">reconstruidas</tspan></text>
+  <text class="body" x="1450" y="380"><tspan x="1450">mesma grade</tspan><tspan x="1450" dy="23">32 x 32 x 1792</tspan></text>
+
+  <rect class="box" x="1575" y="265" width="190" height="180" fill="#fbefff" stroke="#bf8bff"/>
+  <text class="heading" x="1670" y="320"><tspan x="1670">Discrepancia</tspan></text>
+  <text class="body" x="1670" y="358"><tspan x="1670">norma L2 entre features</tspan><tspan x="1670" dy="23">reais e reconstruidas</tspan><tspan x="1670" dy="23">reducao nos canais</tspan></text>
+
+  <rect class="box" x="1795" y="265" width="160" height="180" fill="#dafbe1" stroke="#4ac26b"/>
+  <text class="heading" x="1875" y="320"><tspan x="1875">Mapa bruto</tspan></text>
+  <text class="body" x="1875" y="358"><tspan x="1875">escore espacial</tspan><tspan x="1875" dy="23">32 x 32</tspan></text>
+
+  <rect class="box" x="1990" y="265" width="170" height="180" fill="#dafbe1" stroke="#4ac26b"/>
+  <text class="heading" x="2075" y="320"><tspan x="2075">Redimensionar</tspan></text>
+  <text class="body" x="2075" y="358"><tspan x="2075">interpolacao</tspan><tspan x="2075" dy="23">bilinear</tspan><tspan x="2075" dy="23">512 x 512</tspan></text>
+
+  <rect class="box" x="2195" y="265" width="160" height="180" fill="#dafbe1" stroke="#4ac26b"/>
+  <text class="heading" x="2275" y="320"><tspan x="2275">Escore por</tspan><tspan x="2275" dy="23">imagem</tspan></text>
+  <text class="body" x="2275" y="380"><tspan x="2275">media dos 1%</tspan><tspan x="2275" dy="23">maiores pixels</tspan></text>
+
+  <path class="arrow" d="M198 355 H216"/>
+  <path class="arrow" d="M403 355 H421"/>
+  <path class="arrow" d="M648 355 H681"/>
+  <path class="arrow" d="M868 355 H896"/>
+  <path class="arrow" d="M1063 355 H1091"/>
+  <path class="arrow" d="M1328 355 H1356"/>
+  <path class="arrow" d="M1543 355 H1571"/>
+  <path class="arrow" d="M1768 355 H1791"/>
+  <path class="arrow" d="M1958 355 H1986"/>
+  <path class="arrow" d="M2163 355 H2191"/>
+
+  <rect x="45" y="510" width="2310" height="105" rx="14" fill="#ffffff" stroke="#d0d7de"/>
+  <text class="note" x="75" y="550"><tspan font-weight="700">Treino:</tspan><tspan> loss MSE entre features alvo e reconstruidas; somente o decodificador e atualizado.</tspan></text>
+  <text class="note" x="75" y="583"><tspan font-weight="700">Variantes:</tspan><tspan> baseline sem jitter/mascara; completo com jitter de features e atencao local mascarada 7 x 7.</tspan></text>
+</svg>

@@ -144,6 +144,62 @@ e do protocolo de comparacao esta em
 O relatorio tambem registra a decisao e as citacoes de artigos, bibliotecas e
 implementacoes consultadas.
 
+## Diagramas e pseudocodigos
+
+Os diagramas SVG do pipeline do modelo e do protocolo experimental, junto com
+os pseudocodigos de treino e inferencia, estao em
+[`docs/model-pipeline-pseudocode.md`](docs/model-pipeline-pseudocode.md).
+
+## Checkpoint do pipeline em uma categoria
+
+O notebook [`notebooks/category_pipeline_checkpoint.ipynb`](notebooks/category_pipeline_checkpoint.ipynb)
+executa DataLoader, extrator, decoder, mapa de discrepancia e escore em uma
+amostra defeituosa de `bottle`. O decoder ainda nao foi treinado; esse
+checkpoint verifica execucao e alinhamento, nao qualidade do detector. A
+figura gerada fica em `figures/category_pipeline_bottle.png`, e o cronograma
+revisado esta em
+[`docs/decisions/uniad-implementation.md`](docs/decisions/uniad-implementation.md).
+
+## Extrator de caracteristicas
+
+O extrator congelado Wide-ResNet-50-2 que alinha e concatena as features de
+`layer1`, `layer2` e `layer3` esta em `src/feature_extractor.py`. Para entrada
+512 x 512, sua saida tem forma `(B, 1792, 32, 32)`. Rode
+`py -3.9 scripts/benchmark_feature_extractor.py` para medir latencia e, quando
+CUDA estiver disponivel, memoria de pico. Os pesos ImageNet V2 sao baixados na
+primeira execucao. No ambiente CPU-only usado nesta validacao, o batch 1 levou
+722,6 ms em media apos aquecimento; esse resultado nao estima a velocidade em
+GPU.
+
+## Decodificador de reconstrucao
+
+`src/reconstruction_decoder.py` implementa o decoder com embeddings espaciais
+e consultas aprendidas. A configuracao baseline desativa jitter e mascara;
+configure `jitter_scale=20`, `jitter_probability=1` e `neighbor_size=7` para a
+versao completa. Jitter so e aplicado em modo treino, e a mascara restringe a
+atencao a vizinhanca local. A loss MSE e calculada com `reconstruction_loss`.
+Valide com `py -3.9 -m unittest discover -s tests`; para testar uma amostra
+normal real, execute `py -3.9 scripts/smoke_test_decoder.py --category bottle`.
+
+## Escore por imagem
+
+`src/anomaly_scoring.py` agrega mapas de um batch em escores de imagem. O
+metodo predefinido `topk_mean` calcula a media dos 1% maiores pixels, escolhida
+para reduzir sensibilidade a um unico pico ruidoso. A alternativa `max` aplica
+suavizacao Gaussiana 5 x 5 antes do maximo. Ambos aceitam mapas `(B,H,W)` ou
+`(B,1,H,W)` e retornam `(B,)`; testes de batch estao em
+`tests/test_anomaly_scoring.py`.
+
+## Mapas de anomalia por pixel
+
+`src/anomaly_maps.py` calcula a norma L2 da discrepancia por posicao, redimensiona
+bilinearmente e retorna mapas brutos `float32` `(B,H,W)`. Suavizacao Gaussiana
+e opcional. A normalizacao min-max esta isolada em
+`normalize_map_for_visualization` e nao deve ser usada nas metricas. Gere uma
+previa alinhada a imagem e mascara com
+`py -3.9 scripts/visualize_anomaly_maps.py`; a figura resultante identifica o
+decoder como nao treinado e serve apenas para validar o pipeline espacial.
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
