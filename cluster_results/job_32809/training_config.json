@@ -1,0 +1,31 @@
+{
+  "config": {
+    "image_size": 512,
+    "batch_size": 2,
+    "gradient_accumulation_steps": 2,
+    "effective_batch_size": 4,
+    "learning_rate": 0.0003,
+    "decoder_hidden_dim": 128,
+    "decoder_num_encoder_layers": 2,
+    "decoder_num_decoder_layers": 2,
+    "weight_decay": 0.0001,
+    "epochs_max": 30,
+    "checkpoint_every_epochs": 1,
+    "early_stopping_patience": 5,
+    "seed": 42,
+    "num_workers": 2,
+    "mixed_precision": true,
+    "model": "WideResNet50_2_IMAGENET1K_V2_layer1-layer3 + baseline ReconstructionDecoder",
+    "jitter": false,
+    "neighbor_mask": false,
+    "selected_candidate": "higher_lr",
+    "selection_justification": "A configuracao higher_lr obteve o menor MSE normal de validacao (0.46164), contra 0.65438 de baseline e 0.95509 de compact, na busca curta de duas epocas."
+  },
+  "repo_url": "https://github.com/renatocorreia-rmcm/allnomalous.git",
+  "repo_commit": "9486905d2a567100201ce1026efb7a208328b5ea",
+  "torch": "2.14.1+cu130",
+  "torchvision": "0.29.2+cu132",
+  "gpu": "NVIDIA A100 80GB PCIe MIG 1g.10gb",
+  "total_parameters": 70531752,
+  "trainable_parameters": 1648512
+}

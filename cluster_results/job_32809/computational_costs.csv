@@ -1,0 +1,16 @@
+metric,value,unit,details
+gpu,NVIDIA A100 80GB PCIe MIG 1g.10gb,model,Colab runtime GPU
+image_size,512,pixels,square input
+total_parameters,70531752,parameters,frozen extractor + decoder
+trainable_parameters,1648512,parameters,decoder only
+completed_epochs,3,epochs,resumed training history
+total_epoch_time,799.629,seconds,training + validation; excludes checkpoint I/O
+average_epoch_time,266.543,seconds,training + validation
+latest_checkpoint_size,19.885,MB,last_checkpoint.pt
+best_checkpoint_size,6.619,MB,best_decoder.pt
+inference_batch_1_latency,28.466,ms/batch,"full extractor + decoder; 10 warmups, 50 runs"
+inference_batch_1_latency_per_image,28.466,ms/image,batch latency divided by batch size
+inference_batch_1_peak_memory,0.333,GiB,peak allocated GPU memory
+inference_batch_4_latency,49.337,ms/batch,"full extractor + decoder; 10 warmups, 50 runs"
+inference_batch_4_latency_per_image,12.334,ms/image,batch latency divided by batch size
+inference_batch_4_peak_memory,0.452,GiB,peak allocated GPU memory
