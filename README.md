@@ -241,35 +241,6 @@ Com o limite FPR de 0,3, uma curva aleatoria diagonal tem AUPRO esperado em
 torno de 0,15; AUROC aleatorio fica em torno de 0,5. Os testes usam apenas
 mapas sinteticos e nao acessam o conjunto oficial de teste.
 
-## Avaliacao final (nao executar durante treino ou ajuste)
-
-`scripts/evaluate_final.py` compara os checkpoints baseline e completo no
-conjunto oficial, salva os escores e mapas em arquivos NPZ e gera
-`final_metrics.csv` com linhas por categoria e media macro. O comando exige
-configuracoes de treino correspondentes aos checkpoints, commit limpo e a flag
-explicita `--confirm-final-test`; cria `final_test_run.json` para bloquear uma
-segunda execucao acidental. Os mapas sao armazenados em `float16` e as mascaras
-empacotadas em bits para reduzir espaco; AUROC de pixel e AUPRO sao reanalisaveis
-com esses mapas. AUPRO e AUROC de pixel usam histogramas de 2048 bins.
-
-Execute somente depois de congelar os dois modelos e seus hiperparametros, por
-exemplo no Colab com os arquivos de checkpoint/configuracao no Drive:
-
-```bash
-python scripts/evaluate_final.py \
-  --data-root /content/allnomalous \
-  --output-dir /content/drive/MyDrive/allnomalous_final_test \
-  --baseline-checkpoint /content/drive/MyDrive/allnomalous_training/best_decoder.pt \
-  --baseline-training-metadata /content/drive/MyDrive/allnomalous_training/training_config.json \
-  --complete-checkpoint /content/drive/MyDrive/allnomalous_complete/best_decoder.pt \
-  --complete-training-metadata /content/drive/MyDrive/allnomalous_complete/training_config.json \
-  --device cuda --confirm-final-test
-```
-
-O teste oficial sera lido uma unica vez pelo fluxo normal. Nao rode o comando
-enquanto o treinamento ou a selecao de configuracao estiverem em andamento;
-`--allow-rerun` existe somente para repeticoes deliberadas.
-
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
