@@ -229,6 +229,18 @@ previa alinhada a imagem e mascara com
 `py -3.9 scripts/visualize_anomaly_maps.py`; a figura resultante identifica o
 decoder como nao treinado e serve apenas para validar o pipeline espacial.
 
+## Metricas de deteccao
+
+`src/anomaly_metrics.py` expoe `evaluate_model(extractor, decoder, loader)`,
+que calcula AUROC por imagem, AUROC por pixel e AUPRO ate FPR 0,3 por
+categoria e media macro. O AUROC por pixel e o AUPRO usam histogramas
+configuraveis (2048 bins por padrao), evitando guardar todos os mapas na
+memoria; o AUROC por imagem usa ordenacao exata. AUPRO usa componentes
+conectados 4-vizinhos e o pacote SciPy declarado em `requirements.txt`.
+Com o limite FPR de 0,3, uma curva aleatoria diagonal tem AUPRO esperado em
+torno de 0,15; AUROC aleatorio fica em torno de 0,5. Os testes usam apenas
+mapas sinteticos e nao acessam o conjunto oficial de teste.
+
 ### Contagens por categoria
 
 | Categoria | Normais originais | Treino | Validacao |
