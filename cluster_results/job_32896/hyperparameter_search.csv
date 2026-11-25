@@ -1,0 +1,4 @@
+name,learning_rate,hidden_dim,encoder_layers,decoder_layers,best_epoch,best_val_mse,normal_mean_top1pct,normal_mean_map,official_test_used,selected,selection_justification
+baseline,0.0001,128,2,2,2,0.9418141804635525,51.936978459358215,40.87938416004181,False,False,
+higher_lr,0.0003,128,2,2,2,0.55085738748312,44.25288498401642,31.001510500907898,False,True,"A configuracao higher_lr obteve o menor MSE normal de validacao (0.46164), contra 0.65438 de baseline e 0.95509 de compact, na busca curta de duas epocas."
+compact,0.0001,64,1,1,2,1.29897141456604,58.222560584545135,48.10859912633896,False,False,

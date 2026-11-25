@@ -1,0 +1,3 @@
+[NbConvertApp] Converting notebook train_combined_cluster.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+slurmstepd: error: *** JOB 32896 ON cluster-node6 CANCELLED AT 2026-11-25T12:27:58 ***

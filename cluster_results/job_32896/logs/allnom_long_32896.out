@@ -1,0 +1,2 @@
+torch 2.14.1+cu130 cuda True
+gpu NVIDIA A100 80GB PCIe MIG 1g.10gb
