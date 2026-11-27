@@ -38,9 +38,9 @@ detecção de anomalias, independente de classe, localização de anomalias, map
 \end{IEEEkeywords}
 
 \section{Introdução}
-Em inspeção visual, defeitos são raros e podem assumir formas desconhecidas, dificultando a obtenção de dados rotulados para treinamento. Este projeto considera o cenário não supervisionado: o modelo aprende exclusivamente com imagens normais e deve assinalar desvios em imagens de diferentes categorias. A saída principal será um mapa de calor espacial com um escore de anomalia para cada pixel, permitindo localizar os defeitos, além de resumir cada mapa em um escore por imagem \cite{bergmann2021mvtec}.
+Em inspeção visual, defeitos são raros e podem assumir formas desconhecidas, dificultando a obtenção de dados rotulados para treinamento. Este projeto considera o cenário não supervisionado: o modelo aprende exclusivamente com imagens normais e deve assinalar desvios em imagens de diferentes categorias. A saída principal é um mapa de calor espacial com um escore de anomalia para cada pixel, permitindo localizar os defeitos, além de resumir cada mapa em um escore por imagem \cite{bergmann2021mvtec}.
 
-Trabalhos recentes mostram que modelos unificados podem operar sobre várias categorias sem receber rótulos de classe e apontam desafios como atalhos de reconstrução e escalas de pontuação incompatíveis entre categorias. A proposta adota essas ideias como referência para desenvolver e avaliar um único detector sem condicionamento por classe, sem pretender reproduzir integralmente os métodos publicados \cite{you2022unified,guo2024cada}.
+Trabalhos recentes mostram que modelos unificados podem operar sobre várias categorias sem receber rótulos de classe e apontam desafios como atalhos de reconstrução e escalas de pontuação incompatíveis entre categorias. O estudo adota essas ideias como referência para desenvolver e avaliar um único detector sem condicionamento por classe, sem pretender reproduzir integralmente os métodos publicados \cite{you2022unified,guo2024cada}.
 
 \section{Objetivos}
 \subsection{Objetivo geral}
@@ -58,7 +58,7 @@ Desenvolver e avaliar um modelo geral de detecção de anomalias, independente d
 \section{Justificativa}
 Treinar um modelo por categoria exige identificar a classe na implantação e manter múltiplos modelos. Um detector único que não dependa dessa informação pode simplificar o uso em cenários nos quais as categorias são desconhecidas, mas precisa lidar com distribuições visuais distintas e produzir escores comparáveis entre elas. UniAD estuda a detecção unificada sem rótulos de classe e CADA aborda o desalinhamento das distribuições de escores nesse cenário \cite{you2022unified,guo2024cada}.
 
-O MVTec AD reúne objetos, texturas e máscaras pixel a pixel, permitindo avaliar tanto se o modelo detecta uma imagem defeituosa quanto se localiza precisamente a região anômala. Assim, o projeto investigará uma saída diretamente útil à inspeção visual: um mapa de calor espacial com escore por pixel, aprendido sem exemplos de defeitos e sem dependência da classe \cite{bergmann2021mvtec}.
+O MVTec AD reúne objetos, texturas e máscaras pixel a pixel, permitindo avaliar tanto se o modelo detecta uma imagem defeituosa quanto se localiza precisamente a região anômala. Assim, o projeto investigou uma saída diretamente útil à inspeção visual: um mapa de calor espacial com escore por pixel, aprendido sem exemplos de defeitos e sem dependência da classe \cite{bergmann2021mvtec}.
 
 \section{Base de Dados}
 O MVTec AD \cite{bergmann2021mvtec} reúne 15 categorias, sendo 5 de textura e 10 de objeto. O conjunto de treino contém apenas imagens normais, enquanto o de teste contém imagens normais e defeituosas. No total são 5.354 imagens, valor que confere com o informado no artigo da base. A Tabela~\ref{tab:contagem} apresenta as contagens por categoria e partição.
@@ -181,7 +181,7 @@ zipper & 1024$\times$1024 & Cinza & 2.62 & 2.35 & 0.159 & 16/119 \\
 \end{tabular}
 \end{table}
 
-A Figura~\ref{fig:hist} mostra a distribuição da proporção de pixels anômalos, em escala logarítmica. Dos 1.258 defeitos, 499 (cerca de 40\%) ocupam menos de 1\% da imagem, e 17 ocupam menos de 0,1\%. Os defeitos são especialmente pequenos em screw (118 de 119 máscaras abaixo de 1\%, mediana de 0,29\%), capsule (85 de 109) e leather (70 de 92). Em contrapartida, categorias como metal\_nut e transistor têm defeitos grandes, causados sobretudo pelos tipos flip e misplaced, cujas máscaras cobrem cerca de 38\% a 49\% da imagem. Como ponto de partida, será considerada a resolução de $512\times512$, comparando-se o desempenho com a resolução nativa e monitorando especialmente a detecção dos defeitos menores.
+A Figura~\ref{fig:hist} mostra a distribuição da proporção de pixels anômalos, em escala logarítmica. Dos 1.258 defeitos, 499 (cerca de 40\%) ocupam menos de 1\% da imagem, e 17 ocupam menos de 0,1\%. Os defeitos são especialmente pequenos em screw (118 de 119 máscaras abaixo de 1\%, mediana de 0,29\%), capsule (85 de 109) e leather (70 de 92). Em contrapartida, categorias como metal\_nut e transistor têm defeitos grandes, causados sobretudo pelos tipos flip e misplaced, cujas máscaras cobrem cerca de 38\% a 49\% da imagem. Os experimentos utilizaram $512\times512$. A influência da resolução nativa permanece em aberto.
 
 \begin{figure}[htbp]
 \centering
@@ -191,13 +191,37 @@ A Figura~\ref{fig:hist} mostra a distribuição da proporção de pixels anômal
 \end{figure}
 
 \section{Modelos em Aprendizagem Profunda}
-Será implementada uma versão reduzida e própria, inspirada conceitualmente em UniAD \cite{you2022unified}, usando PyTorch \cite{paszke2019pytorch}. A implementação oficial UniAD foi avaliada como referência, mas não será reutilizada diretamente: fixa dependências antigas (PyTorch 1.5.0 e torchvision 0.6.0+cu90), usa operações CUDA explícitas e configura entrada de 224$\times$224 e treinamento de até 1000 épocas, diferentes do ambiente e da resolução candidata deste projeto \cite{you2022uniadcode}. A biblioteca anomalib foi também avaliada; sua versão 2.7.1 não lista UniAD, e o UniNet disponível é outro método com integração MVTec documentada por categoria \cite{anomalib2026,uninetdocs}. Nenhum código dessas duas implementações será copiado. O DataLoader do projeto usa Pillow e NumPy para leitura e conversão de imagens \cite{pillow,numpy2020}.
+Implementamos uma versão reduzida e própria, inspirada conceitualmente em UniAD \cite{you2022unified}, usando PyTorch \cite{paszke2019pytorch}. A implementação oficial UniAD foi avaliada como referência, e não foi reutilizada diretamente: fixa dependências antigas (PyTorch 1.5.0 e torchvision 0.6.0+cu90), usa operações CUDA explícitas e configura entrada de 224$\times$224 e treinamento de até 1000 épocas, diferentes do ambiente e da resolução adotada deste projeto \cite{you2022uniadcode}. A biblioteca anomalib foi também avaliada; sua versão 2.7.1 não lista UniAD, e o UniNet disponível é outro método com integração MVTec documentada por categoria \cite{anomalib2026,uninetdocs}. Nenhum código dessas duas implementações foi copiado. O DataLoader do projeto usa Pillow e NumPy para leitura e conversão de imagens \cite{pillow,numpy2020}.
 
-O modelo mínimo usa Wide-ResNet-50-2, baseado em redes residuais largas \cite{zagoruyko2016wide}, pré-treinado no ImageNet \cite{russakovsky2015imagenet} e congelado, conforme a implementação e os pesos do torchvision \cite{torchvision2026}. A entrada é redimensionada para 512$\times$512, sem recorte. As saídas de \texttt{layer1}, \texttt{layer2} e \texttt{layer3} (256, 512 e 1024 canais) são alinhadas por interpolação bilinear à grade de stride 16 e concatenadas em um tensor de 1792 canais, com grade espacial 32$\times$32. O decodificador próprio usa projeção 1$\times$1 para 128 canais, embedding posicional e 1024 consultas espaciais aprendidas em um Transformer com duas camadas de encoder e duas de decoder, quatro cabeças e feed-forward de dimensão 512. A saída é projetada de volta a 1792 canais e treinada para reconstruir as features congeladas por MSE. Na versão completa, jitter gaussiano escalado pela norma das features é aplicado somente à entrada do decoder no treino; a atenção do encoder e decoder é restrita a vizinhos em uma janela 7$\times$7. O alvo de reconstrução permanece sem perturbação. O mapa por pixel é a norma L2 da discrepância de features por posição, interpolada bilinearmente para a resolução da imagem. Suavização Gaussiana é opcional; a visualização pode ser normalizada, mas métricas e escores usam os valores brutos. O escore por imagem será a média dos 1\% maiores escores locais, decisão feita antes de avaliar o teste por ser mais robusta a um único pixel ruidoso do que o máximo; a alternativa de máximo após suavização Gaussiana também está implementada.
+O modelo mínimo usa Wide-ResNet-50-2, baseado em redes residuais largas \cite{zagoruyko2016wide}, pré-treinado no ImageNet \cite{russakovsky2015imagenet} e congelado, conforme a implementação e os pesos do torchvision \cite{torchvision2026}. A entrada é redimensionada para 512$\times$512, sem recorte. As saídas de \texttt{layer1}, \texttt{layer2} e \texttt{layer3} (256, 512 e 1024 canais) são alinhadas por interpolação bilinear à grade de stride 16 e concatenadas em um tensor de 1792 canais, com grade espacial 32$\times$32. O decodificador próprio usa projeção 1$\times$1 para 128 canais, embedding posicional e 1024 consultas espaciais aprendidas em um Transformer com duas camadas de encoder e duas de decoder, quatro cabeças e feed-forward de dimensão 512. A saída é projetada de volta a 1792 canais e treinada para reconstruir as features congeladas por MSE. Na versão completa, jitter gaussiano escalado pela norma das features é aplicado somente à entrada do decoder no treino; a atenção do encoder e decoder é restrita a vizinhos em uma janela 7$\times$7. O alvo de reconstrução permanece sem perturbação. O mapa por pixel é a norma L2 da discrepância de features por posição, interpolada bilinearmente para a resolução da imagem. Suavização Gaussiana é opcional; a visualização pode ser normalizada, mas métricas e escores usam os valores brutos. O escore por imagem é a média dos 1\% maiores escores locais, decisão feita antes de avaliar o teste por ser mais robusta a um único pixel ruidoso do que o máximo; a alternativa de máximo após suavização Gaussiana também está implementada.
 
 O baseline desativa a máscara local e o \textit{jitter}. A variante completa usa uma vizinhança $7\times7$ e \textit{jitter} de escala 20 e probabilidade 1 no treino. Os dois modelos foram treinados no Apuana com AdamW, taxa inicial $3\times10^{-4}$, batch 4, acumulação de dois passos e semente 42. Os diferentes orçamentos e critérios de seleção limitam a atribuição dos resultados à arquitetura.
 
+\begin{figure}[htbp]
+\centering
+\fbox{\shortstack{Imagem RGB $\rightarrow$ Wide-ResNet congelada\\
+$\downarrow$\\
+Características multiescala $\rightarrow$ Transformer\\
+$\downarrow$\\
+Erro de reconstrução L2 $\rightarrow$ mapa espacial\\
+$\downarrow$\\
+Média do 1\% superior $\rightarrow$ escore da imagem}}
+\caption{Fluxo de inferência compartilhado pelas 15 categorias.}
+\end{figure}
+
 \section{Experimentos}
+\begin{table}[htbp]\centering
+\caption{Configuração de treinamento no Apuana.}
+\begin{tabular}{ll}\toprule
+Parâmetro & Valor\\\midrule
+Otimizador e decaimento & AdamW, $10^{-4}$\\
+Taxa de aprendizado & $3\times10^{-4}$\\
+Lote físico / efetivo & 4 / 8 imagens\\
+Semente & 42\\
+GPU & NVIDIA A100 PCIe, 80 GB\\
+PyTorch / torchvision (completo) & 2.14.1 / 0.29.2\\
+\bottomrule\end{tabular}\end{table}
+O carregamento usa Pillow e NumPy. SciPy auxilia na integração das métricas e Matplotlib na visualização. O AUROC mede a probabilidade de um exemplo positivo receber escore superior ao de um negativo, por imagem ou por pixel. A AUPRO integra a cobertura média das regiões defeituosas em função da taxa de falsos positivos.
 Os splits fixos contêm 3.262 imagens normais de treino e 367 de validação. O baseline chegou à época 111 e foi selecionado pelo menor MSE de validação na época 109. O treino completo parou na época 385 e selecionou a 315, com \textit{early stopping} baseado na média móvel de 25 épocas, melhora mínima de $10^{-4}$ e tolerância de 70 épocas.
 
 Os dois modelos passaram uma vez pelas mesmas 1.725 imagens do teste oficial. Inspeções visuais anteriores de amostras desse conjunto ficaram fora da seleção quantitativa. O avaliador, congelado no commit \texttt{34f28c5}, calculou o AUROC de imagem por postos e aproximou AUROC de pixel e AUPRO com histogramas de 2.048 bins. A AUPRO foi normalizada até FPR de 0,30. A média macro dá o mesmo peso a cada categoria.
@@ -229,6 +253,8 @@ As medianas dos escores normais variaram de 21,11 em \texttt{leather} a 32,60 em
 
 \section{Conclusões e Discussões}
 Os mapas destacaram os furos na madeira, responderam fracamente à alteração de cor no couro e ativaram na cabeça e na rosca de um parafuso normal. Pose e reflexos são hipóteses para essa sensibilidade e não foram isolados experimentalmente. A grade de características de $32\times32$ e a interpolação a $512\times512$ limitam a localização fina. O extrator foi pré-treinado no ImageNet, a validação de treino continha apenas imagens normais e os resultados vêm de uma única semente. A diferença de escala entre categorias é mais evidente do que o ganho de AUPRO da variante completa.
+
+Uma próxima avaliação deve calibrar o limiar em normais independentes e testar o alinhamento dos escores sem informar a categoria na inferência. Repetições pareadas com sementes distintas, mesmo orçamento e mesmo critério de parada permitiriam estimar a variabilidade do ganho observado.
 
 \bibliographystyle{IEEEtran}
 \bibliography{referencias}

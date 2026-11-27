@@ -1,5 +1,14 @@
 # allnomalous
 
+## Entrega CIN0040
+
+- [Relatório final no formato IEEE](relatorio/relatorio-final.pdf)
+- [Apresentação em PDF](apresentacao/slides.pdf) e [roteiro da dupla](apresentacao/roteiro.md)
+- [Notebook de avaliação executado](notebooks/avaliacao_final.ipynb) e [treino do baseline no Colab](notebooks/train_combined_colab.ipynb)
+- [Treino da variante completa no Apuana](scripts/train_apuana_complete_early_stop.py) e [avaliação dos checkpoints](scripts/evaluate_final.py)
+
+Para recompilar o artigo, execute `tectonic "main (2).tex"` na pasta `relatorio` do clone com as figuras baixadas pelo Git LFS. Para editar a apresentação, abra `apresentacao/slides.html` no navegador e imprima em PDF usando o tamanho de página do documento e sem cabeçalhos do navegador.
+
 ## Avaliação final no MVTec AD
 
 A avaliação oficial usou 1.725 imagens das 15 categorias. O baseline era da época 109 e o modelo completo da época 315.
