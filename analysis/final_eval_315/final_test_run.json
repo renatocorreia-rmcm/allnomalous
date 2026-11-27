@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "started_at_utc": "2026-11-27T16:16:02.843379+00:00",
+  "evaluation_code_commit": "34f28c571d55291a12fc06d63aacdb4dac503abd",
+  "runtime": {
+    "torch": "2.14.1+cu130",
+    "numpy": "2.2.6",
+    "device": "NVIDIA A100 80GB PCIe MIG 1g.10gb"
+  },
+  "protocol": {
+    "image_size": 512,
+    "batch_size": 2,
+    "score_method": "topk_mean",
+    "top_fraction": 0.01,
+    "histogram_bins": 2048,
+    "aupro_max_fpr": 0.3,
+    "map_smoothing_kernel_size": null,
+    "official_test_used": true
+  },
+  "models": {
+    "baseline": {
+      "checkpoint": "/home/CIN/rmcm/allnomalous-runs/final_eval_315/baseline.pt",
+      "checkpoint_sha256": "a75f06c0344f4863f4c9114f714eeab44cee42c56fcb1d099a1737c60a6ebdcb",
+      "epoch": 109,
+      "training_commit": "a9b66186d8b66a05a3fa3a2caf2524a75a0231ae",
+      "config": {
+        "image_size": 512,
+        "batch_size": 4,
+        "gradient_accumulation_steps": 2,
+        "effective_batch_size": 8,
+        "learning_rate": 0.0003,
+        "decoder_hidden_dim": 128,
+        "decoder_num_encoder_layers": 2,
+        "decoder_num_decoder_layers": 2,
+        "weight_decay": 0.0001,
+        "epochs_max": 200,
+        "checkpoint_every_epochs": 1,
+        "early_stopping_patience": 200,
+        "seed": 42,
+        "num_workers": 8,
+        "mixed_precision": true,
+        "model": "WideResNet50_2_IMAGENET1K_V2_layer1-layer3 + baseline ReconstructionDecoder",
+        "jitter": false,
+        "neighbor_mask": false,
+        "selected_candidate": "higher_lr",
+        "selection_justification": "A configuracao higher_lr obteve o menor MSE normal de validacao (0.46164), contra 0.65438 de baseline e 0.95509 de compact, na busca curta de duas epocas."
+      }
+    },
+    "complete": {
+      "checkpoint": "/home/CIN/rmcm/allnomalous-runs/final_eval_315/complete.pt",
+      "checkpoint_sha256": "fe06f45a2caba1d0d9058048e6c10fa6f77c259a492ac2a198d3375f12bee395",
+      "epoch": 315,
+      "training_commit": "1e80dfedb2219ead5e0720b0cb87857da6156a08",
+      "config": {
+        "image_size": 512,
+        "batch_size": 4,
+        "gradient_accumulation_steps": 2,
+        "effective_batch_size": 8,
+        "learning_rate": 0.0003,
+        "decoder_hidden_dim": 128,
+        "decoder_num_encoder_layers": 2,
+        "decoder_num_decoder_layers": 2,
+        "weight_decay": 0.0001,
+        "epochs_max": 1000,
+        "early_stopping_window": 25,
+        "early_stopping_min_delta": 0.0001,
+        "early_stopping_patience": 70,
+        "checkpoint_every_epochs": 1,
+        "seed": 42,
+        "num_workers": 8,
+        "mixed_precision": true,
+        "model": "WideResNet50_2_IMAGENET1K_V2_layer1-layer3 + complete ReconstructionDecoder",
+        "jitter": true,
+        "jitter_scale": 20.0,
+        "jitter_probability": 1.0,
+        "neighbor_mask": true,
+        "neighbor_size": 7
+      }
+    }
+  },
+  "completed_at_utc": "2026-11-27T16:35:20.787194+00:00",
+  "output_files": [
+    "baseline_predictions.npz",
+    "complete_predictions.npz",
+    "final_metrics.csv"
+  ]
+}

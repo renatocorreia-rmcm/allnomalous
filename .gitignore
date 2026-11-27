@@ -1,0 +1,28 @@
+# Python, ambientes e caches locais
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Sa?das de compila??o do relat?rio
+/relatorio/*.aux
+/relatorio/*.bbl
+/relatorio/*.blg
+/relatorio/*.fdb_latexmk
+/relatorio/*.fls
+/relatorio/*.log
+/relatorio/*.out
+/relatorio/*.pdf
+!/relatorio/proposta.pdf
+
+# Anota??es locais de acesso e inspe??es intermedi?rias
+/Apuana Docs.html
+/analysis/apuana_training_32885/
+/analysis/apuana_training_33292/
+
+# Arquivos brutos do teste preservados no Apuana
+/analysis/final_eval_315/*_predictions.npz
+/analysis/final_eval_315/report_final.py

@@ -1,5 +1,21 @@
 # allnomalous
 
+## Avaliação final no MVTec AD
+
+A avaliação oficial usou 1.725 imagens das 15 categorias. O baseline era da época 109 e o modelo completo da época 315.
+
+| Modelo | AUROC imagem | AUROC pixel | AUPRO |
+|---|---:|---:|---:|
+| Baseline | 78,40% | 89,08% | 78,56% |
+| Completo | 78,46% | 89,08% | 78,75% |
+
+- [Índice da avaliação, checkpoints e instruções de reanálise](analysis/final_eval_315/README.md)
+- [Tabela por categoria em CSV](analysis/final_eval_315/final_metrics.csv) e [LaTeX](analysis/final_eval_315/tabela_final.tex)
+- [Relatório de avaliação e análise de falhas](analysis/final_eval_315/relatorio_avaliacao.md)
+- [Mapas de objetos](analysis/final_eval_315/casos_objetos.png), [de texturas](analysis/final_eval_315/casos_texturas.png) e [distribuição dos escores normais](analysis/final_eval_315/escores_normais.png)
+
+O [avaliador congelado](https://github.com/renatocorreia-rmcm/allnomalous/commit/34f28c571d55291a12fc06d63aacdb4dac503abd) e o [manifesto da rodada](analysis/final_eval_315/final_test_run.json) identificam o código e os checkpoints usados. Os diferentes orçamentos e critérios de seleção limitam a atribuição do pequeno ganho de AUPRO à máscara e ao jitter.
+
 Class independent anomaly detection model
 
 ## MVTec AD

@@ -1,0 +1,7 @@
+index,image,category,group,defect,case,score,mask_fraction,iou,hot_border_fraction,mask_border_fraction
+1610,zipper/test/fabric_border/001.png,zipper,objetos,fabric_border,VP,34.13352584838867,0.00970458984375,0.5872138910812944,0.009458297506448839,0.0
+1700,zipper/test/split_teeth/009.png,zipper,objetos,split_teeth,FN,21.998668670654297,0.02123260498046875,0.0,0.0,0.0
+1078,screw/test/good/002.png,screw,objetos,good,FP,37.080360412597656,0.0,0.0,0.02112845138055222,0.0
+1536,wood/test/hole/003.png,wood,texturas,hole,VP,33.77366638183594,0.012401580810546875,0.587634006482174,0.0,0.0
+674,leather/test/color/004.png,leather,texturas,color,FN,20.89690399169922,0.0068817138671875,0.0,0.0,0.0
+529,grid/test/good/012.png,grid,texturas,good,FP (P95 do grupo),25.964454650878906,0.0,0.0,1.0,0.0

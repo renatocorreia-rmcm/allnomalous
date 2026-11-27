@@ -1,0 +1,15 @@
+{
+  "apuana_directory": "~/allnomalous-runs/final_eval_315/results/",
+  "archives": {
+    "baseline": {
+      "file": "baseline_predictions.npz",
+      "bytes": 1440554457,
+      "sha256": "ba5e554789fe03fbb306042f1f9815e18b1ab095b0a281ecbce439c6c712fe8e"
+    },
+    "complete": {
+      "file": "complete_predictions.npz",
+      "bytes": 1440023914,
+      "sha256": "a76bb660775f3fb3ca04ae620302a440a5119e4363830f6372cad4a971a4bfdd"
+    }
+  }
+}
