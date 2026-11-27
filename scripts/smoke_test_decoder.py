@@ -8,6 +8,8 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.dataset_paths import DEFAULT_DATA_ROOT
+
 from src.feature_extractor import WideResNetFeatureExtractor
 from src.mvtec_dataset import MVTecTrainDataset
 from src.reconstruction_decoder import ReconstructionDecoder, reconstruction_loss
@@ -15,7 +17,7 @@ from src.reconstruction_decoder import ReconstructionDecoder, reconstruction_los
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-root", default=".")
+    parser.add_argument("--data-root", type=Path, default=DEFAULT_DATA_ROOT)
     parser.add_argument("--category", default="bottle")
     parser.add_argument("--device", default=None)
     args = parser.parse_args()

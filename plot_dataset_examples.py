@@ -13,6 +13,8 @@ from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 from PIL import Image
 
+from src.dataset_paths import DEFAULT_DATA_ROOT, resolve_data_root
+
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 DEFECT_EXAMPLES = (
@@ -53,7 +55,7 @@ def plot_example(
     axes: Optional[Tuple[Axes, Axes, Axes]] = None,
 ) -> Tuple[Figure, Tuple[Axes, Axes, Axes]]:
     """Plot a normal image, a defective image, and its ground-truth overlay."""
-    data_root = Path(data_root)
+    data_root = resolve_data_root(data_root)
     normal_path = _images_in(data_root / category / "train" / "good")[0]
     defective_dir = data_root / category / "test" / defect_type
     defective_paths = _images_in(defective_dir)
@@ -187,7 +189,7 @@ def _save_defect_figure(
 
 def generate_figures(data_root: Path, output_dir: Path, dpi: int = 300) -> list:
     """Generate the overview and three representative defect figures."""
-    data_root = Path(data_root).resolve()
+    data_root = resolve_data_root(data_root)
     output_dir = Path(output_dir).resolve()
     if not data_root.is_dir():
         raise FileNotFoundError(f"Dataset root not found: {data_root}")
@@ -213,8 +215,8 @@ def main() -> None:
     parser.add_argument(
         "--data-root",
         type=Path,
-        default=script_dir,
-        help="MVTec AD root directory (defaults to this script's directory).",
+        default=DEFAULT_DATA_ROOT,
+        help="MVTec AD root directory (defaults to dataset/ in this checkout).",
     )
     parser.add_argument(
         "--output-dir",

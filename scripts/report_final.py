@@ -2,6 +2,7 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -10,6 +11,10 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 import numpy as np
 from PIL import Image
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from src.dataset_paths import DEFAULT_DATA_ROOT, resolve_data_root
 
 METRICS = ("image_auroc", "pixel_auroc", "aupro")
 TEXTURES = {"carpet", "grid", "leather", "tile", "wood"}
@@ -56,9 +61,10 @@ def plot_cases(cases, maps, masks, data_root, path, name):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("results", type=Path)
-    parser.add_argument("data_root", type=Path)
+    parser.add_argument("data_root", type=Path, nargs="?", default=DEFAULT_DATA_ROOT)
     args = parser.parse_args()
     out = args.results
+    data_root = resolve_data_root(args.data_root)
     manifest = json.loads((out / "final_test_run.json").read_text(encoding="utf-8"))
     if manifest["status"] != "completed":
         raise RuntimeError("Evaluation is incomplete")
@@ -108,7 +114,7 @@ def main():
                 continue
             best = sorted(pool, key=lambda row: ((-1 if reverse else 1)*row[field],row["image"]))[0]
             cases.append(best)
-        plot_cases(cases, maps, masks, args.data_root, out/f"casos_{group}.png", group.capitalize())
+        plot_cases(cases, maps, masks, data_root, out/f"casos_{group}.png", group.capitalize())
         examples.extend(cases)
     write_csv(out / "casos_selecionados.csv", examples)
 

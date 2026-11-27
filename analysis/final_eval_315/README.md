@@ -23,7 +23,9 @@ Os dois NPZ brutos permanecem no Apuana e contêm mapas float32, máscaras compa
 
 ```bash
 python -m pip install -r requirements.txt
-python scripts/report_final.py /caminho/para/artefatos /caminho/para/MVTec-AD
+python scripts/report_final.py /caminho/para/artefatos dataset
 ```
 
 O relatório versionado inclui uma leitura visual complementar dos casos. As imagens do MVTec AD e as figuras derivadas seguem a [licença do dataset](../../license.txt).
+
+Os caminhos das imagens nos CSVs e NPZ da avaliação são relativos à raiz dos dados. Os notebooks executados em `cluster_results/` preservam os caminhos dos jobs originais. Para reproduzir esses jobs, use o commit de treino registrado em cada `training_config.json`.

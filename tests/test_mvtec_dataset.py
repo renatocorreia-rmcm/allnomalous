@@ -81,6 +81,21 @@ class MVTecDatasetTests(unittest.TestCase):
         batch = next(iter(train_loader))
         self.assertEqual(tuple(ImageOnlyModel()(batch).shape), (2, 3, 16, 16))
 
+    def test_loaders_accept_checkout_root_with_nested_dataset(self):
+        nested = self.data_root / "dataset"
+        nested.mkdir()
+        for name in ("bottle", "grid", "train_split.csv", "val_split.csv"):
+            (self.data_root / name).rename(nested / name)
+
+        train, validation = create_dataloaders(self.data_root, batch_size=2)
+        test = create_test_dataloader(self.data_root, batch_size=2).dataset
+
+        self.assertEqual(train.dataset.data_root, nested.resolve())
+        self.assertEqual(validation.dataset.data_root, nested.resolve())
+        first_path = test.samples[0][0].relative_to(test.data_root)
+        self.assertEqual(first_path.as_posix(), "bottle/test/crack/000.png")
+        self.assertEqual(len(test), 4)
+
     def test_test_dataset_resizes_image_and_mask_together(self):
         dataset = MVTecTestDataset(self.data_root, image_size=(16, 16))
         defect_index = next(

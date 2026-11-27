@@ -20,12 +20,14 @@ Class independent anomaly detection model
 
 ## MVTec AD
 
-This repository includes the MVTec AD dataset. Images are stored with Git LFS;
+The MVTec AD categories, masks, and split CSVs are under `dataset/`. Images are stored with Git LFS;
 install Git LFS before cloning, then run `git lfs pull` to download them.
 The dataset is provided under the terms in [license.txt](license.txt).
 Please cite Paul Bergmann, Michael Fauser, David Sattlegger, and Carsten
 Steger, "A Comprehensive Real-World Dataset for Unsupervised Anomaly
 Detection," CVPR 2019.
+
+Os comandos de dados usam `dataset/` por padrao. Use `--data-root` para apontar para outra copia do MVTec AD.
 
 ## Divisao treino/validacao
 
@@ -36,11 +38,11 @@ Execute `python create_splits.py` na raiz desta base. O script usa semente
 validacao. A quantidade reservada e arredondada para cima por categoria; o
 restante fica no treino.
 
-O script gera `train_split.csv` e `val_split.csv`, ambos com as colunas
+O script gera `dataset/train_split.csv` e `dataset/val_split.csv`, ambos com as colunas
 `category` e `path`. Os caminhos sao relativos a raiz da base. A divisao
 considera somente imagens em `<categoria>/train/good`; portanto, a validacao
 contem apenas imagens normais. Os diretorios de teste oficial e de
-`ground_truth` nao sao lidos nem modificados.
+`ground_truth` nao sao lidos nem modificados. A coluna `path` usa caminhos relativos a `dataset/`.
 
 Para recriar a mesma divisao, mantenha a semente `42` e a mesma versao dos
 arquivos da base. A funcao `create_splits` em `create_splits.py` tambem aceita
@@ -134,7 +136,7 @@ for images, masks, labels, categories in test_loader:
     output = model(images)  # categories sao metadados para agrupar a avaliacao.
 ```
 
-O treino e a validacao leem `train_split.csv` e `val_split.csv`, respectivamente;
+O treino e a validacao leem `dataset/train_split.csv` e `dataset/val_split.csv`, respectivamente;
 ambos combinam as 15 categorias e retornam somente tensores de imagem, sem
 rótulo nem metadado de categoria. O loader de treino embaralha as amostras. O
 loader de teste retorna imagem, mascara binaria, rotulo de imagem (0 normal,

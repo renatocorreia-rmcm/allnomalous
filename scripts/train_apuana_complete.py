@@ -6,9 +6,10 @@ import os, subprocess, sys
 from pathlib import Path
 REPO_URL = "https://github.com/renatocorreia-rmcm/allnomalous.git"
 REPO_DIR = Path(sys.argv[1]).resolve()
-assert (REPO_DIR / "train_split.csv").is_file()
-assert (REPO_DIR / "val_split.csv").is_file()
-assert (REPO_DIR / "bottle/train/good/000.png").is_file()
+DATA_ROOT = REPO_DIR / "dataset"
+assert (DATA_ROOT / "train_split.csv").is_file()
+assert (DATA_ROOT / "val_split.csv").is_file()
+assert (DATA_ROOT / "bottle/train/good/000.png").is_file()
 print("Codigo, splits e imagens disponiveis em", REPO_DIR)
 
 DRIVE_DIR = Path(sys.argv[2]).resolve()
@@ -72,8 +73,8 @@ DEVICE = torch.device("cuda")
 from torch.utils.data import DataLoader
 from src.mvtec_dataset import MVTecTrainDataset, MVTecValidationDataset
 
-train_dataset = MVTecTrainDataset(REPO_DIR, image_size=CONFIG["image_size"])
-val_dataset = MVTecValidationDataset(REPO_DIR, image_size=CONFIG["image_size"])
+train_dataset = MVTecTrainDataset(DATA_ROOT, image_size=CONFIG["image_size"])
+val_dataset = MVTecValidationDataset(DATA_ROOT, image_size=CONFIG["image_size"])
 train_generator = torch.Generator().manual_seed(CONFIG["seed"])
 train_loader = DataLoader(
     train_dataset,

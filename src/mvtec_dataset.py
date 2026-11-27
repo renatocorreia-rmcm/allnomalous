@@ -9,6 +9,8 @@ import torch
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 
+from src.dataset_paths import resolve_data_root
+
 
 DEFAULT_IMAGE_SIZE = 512
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -59,7 +61,7 @@ class _NormalImageDataset(Dataset):
         image_size: ImageSize = DEFAULT_IMAGE_SIZE,
         split_file: Optional[Union[str, Path]] = None,
     ) -> None:
-        self.data_root = Path(data_root).resolve()
+        self.data_root = resolve_data_root(data_root)
         self.image_size = _normalize_image_size(image_size)
         csv_path = (
             Path(split_file)
@@ -126,7 +128,7 @@ class MVTecTestDataset(Dataset):
         data_root: Union[str, Path],
         image_size: ImageSize = DEFAULT_IMAGE_SIZE,
     ) -> None:
-        self.data_root = Path(data_root).resolve()
+        self.data_root = resolve_data_root(data_root)
         self.image_size = _normalize_image_size(image_size)
         self.samples: List[Tuple[Path, Optional[Path], int, str]] = []
         categories = sorted(

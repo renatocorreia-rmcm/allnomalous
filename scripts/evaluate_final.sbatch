@@ -21,7 +21,7 @@ cd code
 "$python" -m unittest discover -s tests -p test_anomaly_metrics.py
 "$python" -m unittest discover -s tests -p test_evaluate_final.py
 args=(
-    --data-root "$runs/allnomalous"
+    --data-root "$runs/allnomalous/dataset"
     --output-dir "$run/results"
     --baseline-checkpoint "$run/baseline.pt" --baseline-training-metadata "$run/baseline.json"
     --complete-checkpoint "$run/complete.pt" --complete-training-metadata "$run/complete.json"

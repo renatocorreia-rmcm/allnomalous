@@ -16,6 +16,8 @@ from torch.utils.data import DataLoader, Subset
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from src.dataset_paths import DEFAULT_DATA_ROOT
+
 from src.anomaly_maps import compute_anomaly_maps, normalize_map_for_visualization
 from src.anomaly_scoring import aggregate_anomaly_maps
 from src.feature_extractor import WideResNetFeatureExtractor
@@ -421,7 +423,7 @@ def run_experiment(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-root", default=".")
+    parser.add_argument("--data-root", type=Path, default=DEFAULT_DATA_ROOT)
     parser.add_argument("--output-dir", default="analysis/quick_validation_bottle")
     parser.add_argument("--category", default="bottle")
     parser.add_argument("--image-size", type=int, default=256)

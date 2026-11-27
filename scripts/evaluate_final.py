@@ -19,6 +19,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from src.anomaly_metrics import evaluate_model
+from src.dataset_paths import DEFAULT_DATA_ROOT
 from src.feature_extractor import WideResNetFeatureExtractor
 from src.mvtec_dataset import create_test_dataloader
 from src.reconstruction_decoder import ReconstructionDecoder
@@ -31,7 +32,7 @@ def parse_args() -> argparse.Namespace:
             "test split. This command loads test images and ground-truth masks."
         )
     )
-    parser.add_argument("--data-root", type=Path, default=REPO_ROOT)
+    parser.add_argument("--data-root", type=Path, default=DEFAULT_DATA_ROOT)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--baseline-checkpoint", type=Path, required=True)
     parser.add_argument("--baseline-training-metadata", type=Path, required=True)
@@ -299,7 +300,7 @@ def main() -> None:
         image_size=image_size,
         num_workers=args.num_workers,
     )
-    paths = np.asarray([str(path.relative_to(args.data_root.resolve()))
+    paths = np.asarray([str(path.relative_to(loader.dataset.data_root))
                         for path, _, _, _ in loader.dataset.samples])
     model_results = {}
     for model_name, checkpoint, _, configuration in (

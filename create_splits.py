@@ -5,6 +5,8 @@ import random
 from pathlib import Path
 from typing import List, Tuple
 
+from src.dataset_paths import DEFAULT_DATA_ROOT, resolve_data_root
+
 
 DEFAULT_SEED = 42
 DEFAULT_VALIDATION_FRACTION = 0.1
@@ -19,6 +21,7 @@ def create_splits(
     if not 0 < validation_fraction < 1:
         raise ValueError("validation_fraction must be between 0 and 1.")
 
+    data_root = resolve_data_root(data_root)
     categories = sorted(
         path
         for path in data_root.iterdir()
@@ -84,8 +87,8 @@ def main() -> None:
     parser.add_argument(
         "--data-root",
         type=Path,
-        default=Path(__file__).resolve().parent,
-        help="MVTec AD root directory (defaults to this script's directory).",
+        default=DEFAULT_DATA_ROOT,
+        help="MVTec AD root directory (defaults to dataset/ in this checkout).",
     )
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument(

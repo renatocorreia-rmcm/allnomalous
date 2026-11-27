@@ -15,6 +15,8 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 from PIL import Image
 
+from src.dataset_paths import DEFAULT_DATA_ROOT, resolve_data_root
+
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 SMALL_DEFECT_THRESHOLD = 0.01
@@ -242,7 +244,7 @@ def _save_histogram(
 def analyze_dataset(
     data_root: Path, output_dir: Path, dpi: int = 300
 ) -> Tuple[Path, Path, Path, Path]:
-    data_root = Path(data_root).resolve()
+    data_root = resolve_data_root(data_root)
     output_dir = Path(output_dir).resolve()
     if not data_root.is_dir():
         raise FileNotFoundError(f"Dataset root not found: {data_root}")
@@ -315,8 +317,8 @@ def main() -> None:
     parser.add_argument(
         "--data-root",
         type=Path,
-        default=script_dir,
-        help="MVTec AD root directory (defaults to this script's directory).",
+        default=DEFAULT_DATA_ROOT,
+        help="MVTec AD root directory (defaults to dataset/ in this checkout).",
     )
     parser.add_argument(
         "--output-dir",
