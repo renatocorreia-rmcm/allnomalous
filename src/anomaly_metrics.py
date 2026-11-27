@@ -6,6 +6,7 @@ from typing import Dict, Iterable, List, Optional, Sequence
 import numpy as np
 import torch
 from scipy import ndimage
+from scipy.integrate import trapezoid
 
 from src.anomaly_maps import compute_anomaly_maps
 from src.anomaly_scoring import aggregate_anomaly_maps
@@ -56,7 +57,7 @@ def _histogram_auroc(
     false_positive_rate = np.cumsum(negative_histogram[::-1], dtype=np.float64) / negatives
     tpr = np.concatenate(([0.0], true_positive_rate))
     fpr = np.concatenate(([0.0], false_positive_rate))
-    return float(np.trapz(tpr, fpr))
+    return float(trapezoid(tpr, fpr))
 
 
 def _histogram_aupro(
@@ -91,7 +92,7 @@ def _histogram_aupro(
         fpr = np.concatenate((fpr, [max_fpr]))
         pro = np.concatenate((pro, [pro[-1]]))
 
-    area = float(np.trapz(pro, fpr))
+    area = float(trapezoid(pro, fpr))
     return min(1.0, max(0.0, area / max_fpr))
 
 
@@ -243,7 +244,7 @@ def evaluate_model(
                 artifact_batches["categories"].append(
                     np.asarray([str(category) for category in categories], dtype=np.str_)
                 )
-                artifact_batches["anomaly_maps"].append(maps_cpu.astype(np.float16))
+                artifact_batches["anomaly_maps"].append(maps_cpu.copy())
                 artifact_batches["masks"].append((masks_cpu > 0).astype(np.uint8))
             for index, category in enumerate(categories):
                 accumulators[str(category)].add(
