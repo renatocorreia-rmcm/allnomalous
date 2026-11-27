@@ -70,7 +70,7 @@ class AnomalyMetricTests(unittest.TestCase):
         self.assertEqual(category["region_count"], 2)
         self.assertEqual(result["macro"]["image_auroc"], 1.0)
         self.assertEqual(tuple(result["artifacts"]["anomaly_maps"].shape), (4, 8, 8))
-        self.assertEqual(result["artifacts"]["anomaly_maps"].dtype, np.float16)
+        self.assertEqual(result["artifacts"]["anomaly_maps"].dtype, np.float32)
         self.assertEqual(result["artifacts"]["masks"].dtype, np.uint8)
 
     def test_macro_metrics_are_unweighted_means_of_valid_categories(self):
